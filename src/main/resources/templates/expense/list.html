@@ -1,0 +1,53 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+        layout:decorate="~{layout}">
+    <head>
+        <title th:text="#{expense.list.headline}" />
+    </head>
+    <body>
+        <div layout:fragment="content">
+            <div class="d-flex flex-wrap mb-4">
+                <h1 th:text="#{expense.list.headline}" class="flex-grow-1" />
+                <div>
+                    <a th:href="@{/expenses/add}" th:text="#{expense.list.createNew}" class="btn btn-primary ms-2" />
+                </div>
+            </div>
+            <div th:if="${expenses.empty}" th:text="#{expense.list.empty}" />
+            <div th:if="${!expenses.empty}" class="table-responsive">
+                <table class="table table-striped table-hover">
+                    <thead>
+                        <tr>
+                            <th th:text="#{expense.id.label}" scope="col" />
+                            <th th:text="#{expense.description.label}" scope="col" />
+                            <th th:text="#{expense.date.label}" scope="col" />
+                            <th th:text="#{expense.account.label}" scope="col" />
+                            <th th:text="#{expense.hotel.label}" scope="col" />
+                            <th th:text="#{expense.transport.label}" scope="col" />
+                            <th th:text="#{expense.fuel.label}" scope="col" />
+                            <th th:text="#{expense.meals.label}" scope="col" />
+                            <th><!-- --></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="expense : ${expenses}">
+                            <td th:text="${expense.id}" />
+                            <td th:text="${expense.description}" />
+                            <td th:text="${expense.date}" />
+                            <td th:text="${expense.account}" />
+                            <td th:text="${expense.hotel}" />
+                            <td th:text="${expense.transport}" />
+                            <td th:text="${expense.fuel}" />
+                            <td th:text="${expense.meals}" />
+                            <td>
+                                <form th:action="@{/expenses/delete/{id}(id=${expense.id})}" th:data-confirm-message="#{delete.confirm}" method="post" class="js-submit-confirm float-end">
+                                    <a th:href="@{/expenses/edit/{id}(id=${expense.id})}" th:text="#{expense.list.edit}" class="btn btn-sm btn-info" />
+                                    <button th:text="#{expense.list.delete}" type="submit" class="btn btn-sm btn-danger" />
+                                </form>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </body>
+</html>
