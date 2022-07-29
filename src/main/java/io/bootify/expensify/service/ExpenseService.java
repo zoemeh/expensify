@@ -59,10 +59,7 @@ public class ExpenseService {
 
     public ExpenseDTO get(final Long id) {
         var excel = new ExcelOperation("C:\\dev\\expenses.xlsx");
-
-        return expenseRepository.findById(id)
-                .map(expense -> mapToDTO(expense, new ExpenseDTO()))
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+        return excel.GetRecord(id.intValue());
     }
 
     public Long create(final ExpenseDTO expenseDTO) {
@@ -73,14 +70,13 @@ public class ExpenseService {
     }
 
     public void update(final Long id, final ExpenseDTO expenseDTO) {
-        final Expense expense = expenseRepository.findById(id)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
-        mapToEntity(expenseDTO, expense);
-        expenseRepository.save(expense);
+        var excel = new ExcelOperation("C:\\dev\\expenses.xlsx");
+        excel.UpdateRecord(expenseDTO);
     }
 
     public void delete(final Long id) {
-        expenseRepository.deleteById(id);
+        var excel = new ExcelOperation("C:\\dev\\expenses.xlsx");
+        excel.DeleteRecord(id.intValue());
     }
 
     private ExpenseDTO mapToDTO(final Expense expense, final ExpenseDTO expenseDTO) {

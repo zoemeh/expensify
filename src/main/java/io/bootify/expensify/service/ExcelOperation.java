@@ -26,10 +26,10 @@ public class ExcelOperation {
             excelSheet = wb.getSheetAt(0);
             inFile.close();
 
-        } catch(FileNotFoundException fileException) {
+        } catch (FileNotFoundException fileException) {
             System.out.println(fileException);
             System.exit(-1);
-        } catch(IOException ioe) {
+        } catch (IOException ioe) {
             System.out.println(ioe);
             System.exit(-1);
 
@@ -37,14 +37,21 @@ public class ExcelOperation {
 
 
     }
+
     public ExpenseDTO CreateRecord(ExpenseDTO record) {
         noOfRows = excelSheet.getLastRowNum();
         noOfColumns = excelSheet.getRow(0).getLastCellNum();
-        Row row = excelSheet.createRow(noOfRows+1);
-        for(int i = 0; i < noOfColumns; i++){
-            Cell cell = row.createCell(i);
-            cell.setCellValue(record.getDate());
-        }
+        Row row = excelSheet.createRow(noOfRows + 1);
+        row.createCell(0).setCellValue(record.getDate());
+        row.createCell(1).setCellValue(record.getAccount());
+        row.createCell(2).setCellValue(record.getDescription());
+        row.createCell(3).setCellValue(record.getHotel());
+        row.createCell(4).setCellValue(record.getTransport());
+        row.createCell(5).setCellValue(record.getFuel());
+        row.createCell(6).setCellValue(record.getMeals());
+        row.createCell(7).setCellValue(record.getPhone());
+        row.createCell(8).setCellValue(record.getEntertainment());
+        row.createCell(9).setCellValue(record.getMisc());
         try (OutputStream fileOut = new FileOutputStream(path)) {
             wb.write(fileOut);
         } catch (FileNotFoundException e) {
@@ -53,6 +60,58 @@ public class ExcelOperation {
             throw new RuntimeException(e);
         }
         return record;
+    }
+
+    public void UpdateRecord(ExpenseDTO record){
+        noOfRows = excelSheet.getLastRowNum();
+        noOfColumns = excelSheet.getRow(0).getLastCellNum();
+        Row row = excelSheet.getRow(record.getId().intValue());
+        row.createCell(0).setCellValue(record.getDate());
+        row.createCell(1).setCellValue(record.getAccount());
+        row.createCell(2).setCellValue(record.getDescription());
+        row.createCell(3).setCellValue(record.getHotel());
+        row.createCell(4).setCellValue(record.getTransport());
+        row.createCell(5).setCellValue(record.getFuel());
+        row.createCell(6).setCellValue(record.getMeals());
+        row.createCell(7).setCellValue(record.getPhone());
+        row.createCell(8).setCellValue(record.getEntertainment());
+        //row.createCell(9).setCellValue(record.getMisc());
+
+        try (OutputStream fileOut = new FileOutputStream(path)) {
+            wb.write(fileOut);
+        } catch (FileNotFoundException e) {
+            throw new RuntimeException(e);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public ExpenseDTO GetRecord(int id) {
+        var row = getDataFromExcel(id);
+        var dto = new ExpenseDTO();
+        // TODO get date (parse etc etc)
+        // TODO do something when a cell is empty
+        dto.setId(Long.valueOf(id));
+        dto.setAccount(row.get("Account"));
+        dto.setDescription(row.get("Description"));
+        dto.setHotel(Double.parseDouble(row.get("Hotel")));
+        dto.setTransport(Double.parseDouble(row.get("Transport")));
+        dto.setFuel(Double.parseDouble(row.get("Fuel")));
+        dto.setMeals(Double.parseDouble(row.get("Meals")));
+        dto.setPhone(Double.parseDouble(row.get("Phone")));
+        dto.setEntertainment(Double.parseDouble(row.get("Entertainment")));
+        return dto;
+    }
+
+    public void DeleteRecord(int id) {
+        excelSheet.removeRow(excelSheet.getRow(id));
+        try (OutputStream fileOut = new FileOutputStream(path)) {
+            wb.write(fileOut);
+        } catch (FileNotFoundException e) {
+            throw new RuntimeException(e);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
     HashMap<String,String> getDataFromExcel(int rowNo) {
         HashMap<String,String> hashMap = new HashMap<String,String>();
